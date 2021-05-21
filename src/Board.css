@@ -1,3 +1,13 @@
 .Board {
   margin: 0 auto;
+  
+}
+
+.Board-winMsg {
+  margin-top: 20%;
+  font-size: 4em;
+}
+
+.Board-restart {
+  padding: 10px;
 }

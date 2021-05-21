@@ -27,7 +27,7 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows = 2, ncols = 2, chanceLightStartsOn = 0.4 }) {
   const [board, setBoard] = useState(createBoard());
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
@@ -50,14 +50,15 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
       initialBoard.push(boardRow);
       i++;
     }
+
     return initialBoard;
   }
 
   function hasWon() {
     // TODO: check the board in state to determine whether the player has won.
-    for (let row of board.length) {
-      for (let cell of row.length) {
-        if (cell === false) {
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        if (board[i][j] === false) {
           return false;
         }
       }
@@ -74,20 +75,49 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
 
         if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
           boardCopy[y][x] = !boardCopy[y][x];
+          if (y - 1 >= 0) boardCopy[y - 1][x] = !boardCopy[y - 1][x];
+          if (y + 1 < nrows) boardCopy[y + 1][x] = !boardCopy[y + 1][x];
+          if (x - 1 >= 0) boardCopy[y][x - 1] = !boardCopy[y][x - 1];
+          if (x + 1 < ncols) boardCopy[y][x + 1] = !boardCopy[y][x + 1];
         }
+
       };
-
+      let boardCopy = [];
+      for (let i = 0; i < oldBoard.length; i++) {
+        boardCopy.push(oldBoard[i].slice());
+      }
       // TODO: Make a (deep) copy of the oldBoard
-
+      flipCell(y, x, boardCopy);
       // TODO: in the copy, flip this cell and the cells around it
 
       // TODO: return the copy
+      return boardCopy;
     });
   }
 
   // if the game is won, just show a winning msg & render nothing else
 
   // TODO
+  return (
+    <div>{hasWon() ?
+      <div>
+        <h1 className='Board-winMsg'>You win!</h1>
+        <button className='Board-restart' onClick={() => setBoard(createBoard())}>Restart</button>
+      </div>
+      :
+      <table className='Board-table'>
+        <tbody>
+          {board.map((r, idx) =>
+            <tr key={idx}>{r.map((c, index) =>
+              <Cell key={`${idx}-${index}`} isLit={c === true ? true : false} flipCellsAroundMe={() => flipCellsAround(`${idx}-${index}`)} />)}
+            </tr>
+          )}
+        </tbody>
+      </table>
+    }
+    </div>
+  )
+
 
   // make table board
 
